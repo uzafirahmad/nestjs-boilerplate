@@ -4,10 +4,21 @@ import { AppService } from './app.service';
 import { CrudModule } from './crud/crud.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [CrudModule, AuthenticationModule, MongooseModule.forRoot('mongodb+srv://uzafir:a1ab2bc3cd4d@cluster0.lpk7pcx.mongodb.net/')],
+  imports: [
+    CrudModule,
+    AuthenticationModule,
+    ConfigModule.forRoot({ isGlobal: true }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        uri: configService.get<string>('DB_URL'),
+      }),
+      inject: [ConfigService],
+    })],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
