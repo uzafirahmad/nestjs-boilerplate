@@ -1,36 +1,43 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put, Query } from '@nestjs/common';
 import { CrudService } from './crud.service';
-import { CreateCrudDto } from './dto/create-crud.dto';
-import { UpdateCrudDto } from './dto/update-crud.dto';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
+import { CreateDto } from './dto/create.dto';
+import { DeleteOneDto } from './dto/deleteone.dto';
+import { ReadOneDto } from './dto/readone.dto';
+import { UpdateDto } from './dto/update.dto';
 
 @Controller('crud')
 export class CrudController {
-  constructor(private readonly crudService: CrudService) {}
-  
-  @Post()
-  create(@Body() createCrudDto: CreateCrudDto) {
-    return this.crudService.create(createCrudDto);
+  constructor(private readonly crudService: CrudService) { }
+
+  @UseGuards(AuthGuard('login_required'))
+  @Post('create')
+  async create(@Body() createCrudDto: CreateDto, @Req() req: Request) {
+    return this.crudService.create(createCrudDto, req);
   }
 
-  @Get()
-  findAll() {
-    return this.crudService.findAll();
+  @UseGuards(AuthGuard('login_required'))
+  @Get('findall')
+  async findAll(@Req() req: Request) {
+    return this.crudService.findAll(req);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.crudService.findOne(+id);
+  @UseGuards(AuthGuard('login_required'))
+  @Get('findone')
+  async findOne(@Query() readOneDto: ReadOneDto, @Req() req: Request) {
+    return this.crudService.findOne(readOneDto, req);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCrudDto: UpdateCrudDto) {
-    return this.crudService.update(+id, updateCrudDto);
+  @UseGuards(AuthGuard('login_required'))
+  @Patch('update')
+  async update(@Body() updateDto: UpdateDto, @Req() req: Request) {
+    return this.crudService.update(updateDto, req);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.crudService.remove(+id);
+  @UseGuards(AuthGuard('login_required'))
+  @Delete('removeone')
+  removeone(@Body() deleteOneDto: DeleteOneDto, @Req() req: Request) {
+    return this.crudService.removeone(deleteOneDto, req);
   }
 }

@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { Request } from 'express';
+import { BadRequestException } from '@nestjs/common';
 
 @Injectable()
 export class AuthenticationService {
@@ -14,16 +15,24 @@ export class AuthenticationService {
     private jwtService: JwtService
     ) { }
 
-  async registerUser(registerDto: RegisterDto): Promise<User> {
-    const {email,password,username} = registerDto
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new this.userModel({
-      email: email,
-      password: hashedPassword,
-      username: username,
-    });
-    return newUser.save();
-  }
+    async registerUser(registerDto: RegisterDto): Promise<User> {
+      const { email, password, username } = registerDto;
+    
+      const existingUser = await this.userModel.findOne({ $or: [{ email }, { username }] });
+      if (existingUser) {
+        // Throw an error or return a custom response
+        throw new BadRequestException('Email or username already exists');
+      }
+    
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const newUser = new this.userModel({
+        email: email,
+        password: hashedPassword,
+        username: email,
+      });
+      return newUser.save();
+    }
+    
 
   async loginUser(loginDto: LoginDto): Promise<{ accessToken: string } | null> {
     const {email,password} = loginDto
