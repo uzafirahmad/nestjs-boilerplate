@@ -16,11 +16,15 @@ export class AuthenticationService {
     ) { }
 
     async registerUser(registerDto: RegisterDto): Promise<User> {
-      const { email, password, username } = registerDto;
+      const { email, password, confirmPassword, username } = registerDto;
+    
+      // Check if the password and confirmPassword match
+      if (password !== confirmPassword) {
+        throw new BadRequestException('Passwords do not match');
+      }
     
       const existingUser = await this.userModel.findOne({ $or: [{ email }, { username }] });
       if (existingUser) {
-        // Throw an error or return a custom response
         throw new BadRequestException('Email or username already exists');
       }
     
@@ -28,8 +32,9 @@ export class AuthenticationService {
       const newUser = new this.userModel({
         email: email,
         password: hashedPassword,
-        username: email,
+        username: email, // Note: You are using the email as the username here. Make sure this is intended.
       });
+    
       return newUser.save();
     }
     

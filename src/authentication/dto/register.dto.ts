@@ -16,6 +16,17 @@ export class RegisterDto {
   password: string;
 
   @IsString()
+  @MinLength(6)
+  @MaxLength(20)
+  @Matches(/^(?=.*[A-Z])/, {
+    message: 'Password must contain at least one uppercase letter',
+  })
+  @Matches(/^(?=.*[!@#$%^&*])/, {
+    message: 'Password must contain at least one special character',
+  })
+  confirmPassword: string;
+
+  @IsString()
   @MinLength(4)
   @MaxLength(20)
   username: string;

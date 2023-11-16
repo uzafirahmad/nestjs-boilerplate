@@ -13,7 +13,7 @@ export class CrudService {
   constructor(@InjectModel('Crud') private crudModel: Model<Crud>
     ) { }
 
-    async create(createCrudDto: CreateDto, req: Request) {
+    async create(createCrudDto: CreateDto, req: Request): Promise<Crud> {
       const user = req.user;
       const { title, description } = createCrudDto
 
@@ -25,12 +25,12 @@ export class CrudService {
       return newCrud.save();
     }
 
-  async findAll(req: Request) {
+  async findAll(req: Request): Promise<Crud[]> {
     const user = req.user
     return this.crudModel.find({ user: user["id"] }).exec();
   }
 
-  async findOne(readOneDto: ReadOneDto, req: Request) {
+  async findOne(readOneDto: ReadOneDto, req: Request): Promise<Crud> {
     const user= req.user
     const { id } = readOneDto
     const crudRecord = await this.crudModel.findOne({ _id: id, user: user["id"] }).exec();
@@ -40,7 +40,7 @@ export class CrudService {
     return crudRecord;
   }
 
-  async update(updateDto: UpdateDto, req: Request) {
+  async update(updateDto: UpdateDto, req: Request): Promise<Crud> {
     const user= req.user
     const { id, title, description } = updateDto
 
@@ -56,7 +56,7 @@ export class CrudService {
     return crudRecord;
   }
 
-  async removeone(deleteOneDto: DeleteOneDto, req: Request) {
+  async removeone(deleteOneDto: DeleteOneDto, req: Request): Promise<{ message: string }> {
     const user= req.user
     const { id } = deleteOneDto
     const result = await this.crudModel.deleteOne({ _id: id, user: user["id"] }).exec();
