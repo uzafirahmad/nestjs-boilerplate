@@ -24,7 +24,7 @@ export class RegisterDto {
   @Matches(/^(?=.*[!@#$%^&*])/, {
     message: 'Password must contain at least one special character',
   })
-  confirmPassword: string;
+  confirmpassword: string;
 
   @IsString()
   @MinLength(4)

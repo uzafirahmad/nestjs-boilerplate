@@ -1,5 +1,5 @@
 // express.d.ts
-import { User } from './authentication/model/user.interface'; // Adjust the path as necessary
+import { User } from './authentication/model/authentication.interface'; // Adjust the path as necessary
 
 declare global {
   namespace Express {

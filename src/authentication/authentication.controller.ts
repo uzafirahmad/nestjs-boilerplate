@@ -4,8 +4,9 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { VerifyDto } from './dto/verify.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from './model/user.interface';
+import { User } from './model/authentication.interface';
 import { Request } from 'express';
+import { RefreshTokenDto } from './dto/token.dto';
 
 @Controller('authentication')
 export class AuthenticationController {
@@ -23,7 +24,12 @@ export class AuthenticationController {
  
   @Post('verify')
   async verify(@Body() verifyDto: VerifyDto) {
-    return this.authenticationService.verify(verifyDto.accesstoken);
+    return this.authenticationService.verify(verifyDto);
+  }
+
+  @Post('gettoken')
+  async refresh(@Body() tokenDto: RefreshTokenDto) {
+    return this.authenticationService.refreshToken(tokenDto);
   }
 
   @UseGuards(AuthGuard('login_required'))
